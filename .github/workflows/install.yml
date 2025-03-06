@@ -1,0 +1,40 @@
+name: download
+
+on:
+  workflow_dispatch:     # Allow manual triggering
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        # Add this to persist credentials
+        persist-credentials: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Run scraping script
+      run: |
+        cd content
+        git clone https://github.com/Insertanamee/FSave.git
+        git checkout filter-source
+        git filter-repo --path stuff.zip --force
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add .
+        git commit -m "Update scraped content" || echo "No changes to commit"
+        # Use this push command instead
+        git push "https://${{ github.actor}}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main
+      
+      
