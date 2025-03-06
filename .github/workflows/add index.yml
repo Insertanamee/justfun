@@ -24,7 +24,7 @@ jobs:
 
     - name: Run scraping script
       run: |
-        python add.py /content/docs
+        python add.py content/docs
   
     - name: Commit and push changes
       run: |
