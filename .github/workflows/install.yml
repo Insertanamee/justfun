@@ -25,8 +25,7 @@ jobs:
       run: |
         cd content
         git clone https://github.com/Insertanamee/FSave.git
-        git checkout filter-source
-        git filter-repo --path stuff.zip --force
+        
 
     - name: Commit and push changes
       run: |
