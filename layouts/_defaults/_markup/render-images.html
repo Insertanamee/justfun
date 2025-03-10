@@ -1,0 +1,29 @@
+{{- $alt := .PlainText | safeHTML -}}
+{{- $lazyLoading := .Page.Site.Params.enableImageLazyLoading | default true -}}
+{{- $dest := .Destination -}}
+
+{{- $isLocal := not (urls.Parse $dest).Scheme -}}
+{{- $isPage := and (eq .Page.Kind "page") (not .Page.BundleType) -}}
+{{- $startsWithSlash := hasPrefix $dest "/" -}}
+{{- $startsWithRelative := hasPrefix $dest "../" -}}
+
+{{- if and $dest $isLocal -}}
+  {{- if $startsWithSlash -}}
+    {{- $dest = (relURL (strings.TrimPrefix "/" $dest)) -}}
+  {{- else if and $isPage (not $startsWithRelative) -}}
+    {{ $dest = (printf "../%s" $dest) }}
+  {{- end -}}
+{{- end -}}
+
+{{- with .Title -}}
+  <figure>
+    <div style="background: white; display: inline-block;">
+      <img src="{{ $dest | safeURL }}" title="{{ . }}" alt="{{ $alt }}" {{ if $lazyLoading }}loading="lazy"{{ end }} style="display: block;" />
+    </div>
+    <figcaption>{{ . }}</figcaption>
+  </figure>
+{{- else -}}
+  <div style="background: white; display: inline-block;">
+    <img src="{{ $dest | safeURL }}" alt="{{ $alt }}" {{ if $lazyLoading }}loading="lazy"{{ end }} style="display: block;" />
+  </div>
+{{- end -}}
